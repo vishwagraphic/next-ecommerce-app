@@ -23,7 +23,7 @@ export default function cartTable({ cart }: { cart?: Cart }) {
       <h1 className="py-4 h2-bold">Shopping Cart</h1>
       {!cart || cart?.items?.length === 0 ? (
         <p className="text-muted-foreground">
-          Your cart is empty. <Link href="/products" className="text-primary hover:underline">
+          Your cart is empty. <Link href="/search" className="text-primary hover:underline">
             Continue shopping
           </Link>
         </p>
@@ -40,7 +40,7 @@ export default function cartTable({ cart }: { cart?: Cart }) {
                     {cart?.items?.map((item) => (
                         <TableRow key={item.slug}>
                             <TableCell>
-                                <Link href={`/products/${item.slug}`} className="flex items-center gap-2">
+                                <Link href={`/product/${item.slug}`} className="flex items-center gap-2">
                                     <Image src={item.image} alt={item.name} width={50} height={50} />
                                     {item.name}
                                 </Link>

@@ -7,17 +7,19 @@ import Link from "next/link";
 import Image from "next/image";
 
 const ProductCarousel = ({data}: {data: Product[]}) => {
+    const productsWithBanners = data.filter((product) => product.banner);
+
     return ( 
    <Carousel className="w-full mb-12" opts={{ loop: true }} plugins={[Autoplay(
     { delay: 2000, stopOnInteraction: true, stopOnMouseEnter: true }
    )]}>
     <CarouselContent>
-        {data.map((product:Product) => (
+        {productsWithBanners.map((product:Product) => (
             <CarouselItem key={product.id}>
                <Link href={`/product/${product.slug}`}>
                    <div className="relative mx-auto" >
                        <Image
-                           src={product.banner as string}
+                           src={product.banner!.startsWith("http") ? product.banner! : `/images/${product.banner}`}
                            alt={product.name}
                            width={0}
                            height={0}
