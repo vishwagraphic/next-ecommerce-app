@@ -11,6 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import ModeToggle from './ModeToggle'
+import UserMenu from "./user-menu";
 
 const Menu = () => {
   return (
@@ -24,13 +25,14 @@ const Menu = () => {
             <span>Cart</span>
           </Link>
         </Button>
+        <UserMenu />
 
-        <Button className="space-x-2">
+        {/* <Button className="space-x-2">
           <Link href="/sign-in" className="inline-flex items-center gap-2">
             <UserIcon />
             <span>Sign In</span>
           </Link>
-        </Button>
+        </Button> */}
       </nav>
 
       <nav className="md:hidden">

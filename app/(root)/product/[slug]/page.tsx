@@ -5,10 +5,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import {getProductBySlug} from '@/lib/actions/product.actions'
 import { Badge } from 'lucide-react';
 import ProductImages from '@/components/shared/product/product-images'
+import AddCart from '@/components/shared/product/add-cart';
+import { getMyCart } from '@/lib/actions/cart.actions';
 
 const ProductDetailsPage = async (props: { params: { slug: string } }) => {
     const params = await props.params;
     const product = await getProductBySlug(params.slug);
+
+    const cart = await getMyCart();
     return ( 
        <div>
          {product ? (
@@ -58,7 +62,20 @@ const ProductDetailsPage = async (props: { params: { slug: string } }) => {
                                 </div>
                                 {
                                     product.stock > 0 && (
-                                        <Button>Add to Cart</Button>
+                                            <div className='flex-center'>
+                                                <AddCart
+                                                    cart={cart}
+                                                    item={{
+                                                        productId: product.id,
+                                                        name: product.name,
+                                                        slug: product.slug,
+                                                        price: product.price,
+                                                        qty: 1,
+                                                        image: product.images![0]
+
+                                                    }}
+                                                />
+                                            </div>
                                     )
                                 }
                                 

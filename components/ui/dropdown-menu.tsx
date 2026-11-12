@@ -60,6 +60,8 @@ function DropdownMenuLabel({
   inset?: boolean
 }) {
   return (
+
+  <MenuPrimitive.Group>
     <MenuPrimitive.GroupLabel
       data-slot="dropdown-menu-label"
       data-inset={inset}
@@ -69,6 +71,7 @@ function DropdownMenuLabel({
       )}
       {...props}
     />
+    </MenuPrimitive.Group>
   )
 }
 

@@ -5,12 +5,16 @@ import ProductPrice from "./product-price";
 import { Product } from "@/types";
 
 const ProductCard = ({ product }: { product: Product }) => {
+    const image = product.images?.[0];
+
     return (
         <Card className="w-full max-w-sm">
             <CardHeader className="p-0 items-center">
-                <Link href={`/product/${product.slug}`}>
-                    <Image src={product.images[0]} alt={product.name} height="300" width="300" />
-                </Link>
+                {image && (
+                     <Link href={`/product/${product?.slug}`}>
+                        <Image src={image} alt={product?.name} height={300} width={300} />
+                     </Link>
+                )}
             </CardHeader>
             <CardContent>
                 <p className="text-xs">{product.brand}</p>
