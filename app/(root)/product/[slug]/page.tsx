@@ -1,21 +1,27 @@
 import NotFoundPage from '@/app/not-found';
 import ProductPrice from '@/components/shared/product/product-price';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {getProductBySlug} from '@/lib/actions/product.actions'
 import { Badge } from 'lucide-react';
 import ProductImages from '@/components/shared/product/product-images'
 import AddCart from '@/components/shared/product/add-cart';
 import { getMyCart } from '@/lib/actions/cart.actions';
+import ReviewList from './review-list';
+import {auth} from '@/auth';
+import Rating from '@/components/shared/product/rating';
 
 const ProductDetailsPage = async (props: { params: { slug: string } }) => {
     const params = await props.params;
     const product = await getProductBySlug(params.slug);
 
+    const session = await auth();
+    const userId = session?.user?.id;
+
     const cart = await getMyCart();
     return ( 
        <div>
          {product ? (
+            <>
             <section>
                 <div className="flex grid-cols-1 md:grid-cols-5">
                     <div className="col-span-2">
@@ -25,7 +31,9 @@ const ProductDetailsPage = async (props: { params: { slug: string } }) => {
                         <div className="flex flex-col gap-6">
                             <p>{product.brand} {product.category}</p>
                             <h1 className="h3-bold">{product.name}</h1>
-                            <p>{product.rating} of {product.numReviews} Reviews</p>
+                            
+                            <Rating value={Number(product.rating)}  />
+                            <p>{product.numReviews} Reviews</p>
                             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                                 <ProductPrice 
                                     className="w-24 rounded-full bg-green-100 text-green-800 px-5 py-2" 
@@ -85,6 +93,15 @@ const ProductDetailsPage = async (props: { params: { slug: string } }) => {
                 </div>
                
             </section>
+            <section className="mt-10">
+                <h2 className="text-xl font-bold mb-4">Customer Reviews</h2>
+                <ReviewList 
+                    userId={userId}
+                    productId={product.id}
+                    productSlug={product.slug}
+                />
+            </section>
+            </>
         ) : <NotFoundPage />}
        </div>
      );

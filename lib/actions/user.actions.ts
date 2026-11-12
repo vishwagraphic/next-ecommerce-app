@@ -3,13 +3,13 @@
 import { signInSchema, signUpSchema, updateProfileSchema } from "../validators"
 import { auth, signIn, signOut } from "@/auth"
 import { isRedirectError } from "next/dist/client/components/redirect-error"
+import { redirect } from "next/navigation"
 import { hashSync } from "bcrypt-ts-edge"
 import {prisma} from '@/db/prisma'
 import {formatError} from '../utils'
 import { ShippingAddress } from "@/types"
 import { shippingAddressSchema, paymentMethodSchema } from "../validators"
 import z from "zod"
-import { PAGE_SIZE } from "../constants"
 import { revalidatePath } from "next/cache"
 import { updateUserSchema } from "../validators"
 import { Prisma } from "../generated/prisma/browser"
@@ -22,11 +22,24 @@ export async function signInWithCredentials(prevState: unknown, formData: FormDa
             password: formData.get("password")
         })
 
-        console.log("user:", user)
+        const requestedCallback = formData.get("callbackUrl")
+        const callbackUrl = typeof requestedCallback === "string"
+            && requestedCallback.startsWith("/")
+            && !requestedCallback.startsWith("//")
+            ? requestedCallback
+            : "/"
 
-        await signIn("credentials", user)
+        const result = await signIn("credentials", {
+            ...user,
+            redirect: false,
+            redirectTo: callbackUrl,
+        })
 
-        return {success: true, message: 'Signed in successfully'}
+        if (typeof result === "string" && new URL(result).searchParams.has("error")) {
+            return {success: false, message: 'Invalid email or password'}
+        }
+
+        redirect(callbackUrl)
     } catch (error) {
         if (isRedirectError(error)) {
             throw error
@@ -38,7 +51,8 @@ export async function signInWithCredentials(prevState: unknown, formData: FormDa
 
 // Sign user out
 export async function signOutUser() {
-    await signOut()
+    await signOut({ redirect: false })
+    redirect("/")
 }
 
 // Sign up a new user
