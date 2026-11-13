@@ -9,18 +9,14 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { startTransition, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import StripePayment from './stripe-payment';
 
-const OrderDetailsTable = ({order, paypalClientId, isAdmin}: {order: Order, paypalClientId: string, isAdmin: boolean}) => {
+const OrderDetailsTable = ({order, stripeClientSecret, paypalClientId, isAdmin}: {order: Order, stripeClientSecret: string, paypalClientId: string, isAdmin: boolean}) => {
     const router = useRouter();
 
     const { 
         id,
         shippingAddress,
-        itemsPrice,
-        shippingPrice, 
-        totalPrice,
-        orderItems,
-        taxPrice,
         paymentMethod,
         isDelivered,
         isPaid,
@@ -139,6 +135,14 @@ const OrderDetailsTable = ({order, paypalClientId, isAdmin}: {order: Order, payp
                                 ) : (
                                     <p role="alert">PayPal is not configured. Set PAYPAL_CLIENT_ID in the server environment.</p>
                                 )
+                            )}
+
+                            {!isPaid && paymentMethod as any === 'Stripe' && stripeClientSecret && (
+                                <StripePayment
+                                    priceinCents={Number(order.totalPrice) * 100}
+                                    orderId={order.id}
+                                    stripeClientSecret={stripeClientSecret}
+                                />
                             )}
 
                             {
