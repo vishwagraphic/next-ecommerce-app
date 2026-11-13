@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import Stripe from "stripe";
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY ?? "");
+import { getStripe } from "@/lib/stripe";
 
 import {updateOrderStatus} from "@/lib/actions/order.action";
 import { metadata } from "@/app/layout";
@@ -13,6 +12,7 @@ export async function POST(req: NextRequest) {
     let event;
 
     try {
+        const stripe = getStripe();
         event = stripe.webhooks.constructEvent(
             body,
             signature,
