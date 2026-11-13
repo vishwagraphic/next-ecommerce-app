@@ -196,21 +196,34 @@ export async function updateOrderStatus(orderId: string, paymentResult?: Payment
         }
 
         if(order.isPaid) {
-            throw new Error("Order is already paid");
+            return {success: true, message: "Order is already paid"};
         }
 
-        await prisma.$transaction(async (tx) => {
+        const markedPaid = await prisma.$transaction(async (tx) => {
+            const result = await tx.order.updateMany({
+                where: { id: orderId, isPaid: false },
+                data: { isPaid: true, paid_at: new Date(), paymentResult },
+            });
+
+            if (result.count === 0) {
+                return false;
+            }
+
             for (const item of order.orderitems) {
                 await tx.product.update({
                     where: { id: item.productId },
                     data: { stock: { decrement: item.qty } }
                 });
             }
-            await tx.order.update({
-                where: { id: orderId },
-                data: { isPaid: true, paid_at: new Date(), paymentResult },
-            });
+
+            return true;
         });
+
+        if (!markedPaid) {
+            return {success: true, message: "Order is already paid"};
+        }
+
+        revalidatePath(`/order/${orderId}`);
         return {success: true, message: "Order status updated successfully"};
     } catch (error) {
         return {success: false, error: formatError((error as Error))};
