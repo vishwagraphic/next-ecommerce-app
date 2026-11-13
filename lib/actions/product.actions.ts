@@ -7,6 +7,10 @@ import { convertToPlainObject, formatError } from "@/lib/utils";
 import { insertCartSchema, insertProductSchema, updateProductSchema } from '../validators';
 import { Prisma } from '../generated/prisma/browser';
 
+const connectionString = process.env.DATABASE_URL
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is required to seed the database")
+  }
 
   export const getLatestProducts = async () => {
     const products = await prisma.product.findMany({
