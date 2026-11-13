@@ -25,7 +25,7 @@ const SuccessPage = async (props: { params: Promise<{ id: string }>, searchParam
     if (!isSuccessful) {
         redirect(`/order/${id}`);
     }
-    
+
     return (
         <div className="max-w-4xl w-full mx-auto space-y-8">
         <div className="flex flex-col gap-6 items-center">
